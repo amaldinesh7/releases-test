@@ -10,12 +10,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: node
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+      - name: test print
+        run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
       - run: yarn install
       - run: yarn build
       - run: yarn version --patch
@@ -28,12 +28,10 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Test
-        run: |
-          echo $RELEASE_VERSION
-          echo ${{ env.RELEASE_VERSION }}
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5.15.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
