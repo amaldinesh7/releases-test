@@ -17,7 +17,7 @@ jobs:
       - name: test print
         run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
       - run: yarn install
-      - run: yarn build
+      # - run: yarn build
       - run: yarn version --patch
       - run: git config core.hooksPath /dev/null
       - uses: EndBug/add-and-commit@v7
