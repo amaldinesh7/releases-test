@@ -35,8 +35,8 @@ jobs:
         id: package-version
 
       - if: contains(github.event.pull_request.labels.*.name, 'Release')  
-        name: Build Changelog
-        id: github_release
+        name: Build release notes
+        id: build_release_notes
         uses: mikepenz/release-changelog-builder-action@v1
         with:
           # fromTag: ${{ steps.get-latest-tag.outputs.tag }}
@@ -45,12 +45,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
       - if: contains(github.event.pull_request.labels.*.name, 'Release')  
-        name: Create release notes
+        name: Create release
         uses: ncipollo/release-action@v1
         with:
+          configuration: "release-notes-config.json"
           tag: v${{ steps.package-version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{steps.github_release.outputs.changelog}}
+          body: ${{steps.build_release_notes.outputs.changelog}}
           
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
