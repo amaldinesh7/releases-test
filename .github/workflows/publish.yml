@@ -39,19 +39,23 @@ jobs:
         id: build_release_notes
         uses: mikepenz/release-changelog-builder-action@v1
         with:
-          # fromTag: ${{ steps.get-latest-tag.outputs.tag }}
+          configuration: "release-notes-config.json"
           toTag: "v${{ steps.package-version.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+
+      - name: Print changelog
+        env:
+          GITHUB_CONTEXTS: ${{steps.build_release_notes.outputs.changelog}}
+        run: echo "$GITHUB_CONTEXTS"
 
       - if: contains(github.event.pull_request.labels.*.name, 'Release')  
         name: Create release
         uses: ncipollo/release-action@v1
         with:
-          configuration: "release-notes-config.json"
           tag: v${{ steps.package-version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{steps.build_release_notes.outputs.changelog}}
+          # body: ${{steps.build_release_notes.outputs.changelog}}
           
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
