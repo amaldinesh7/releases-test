@@ -39,7 +39,7 @@ jobs:
         id: build_release_notes
         uses: mikepenz/release-changelog-builder-action@v1
         with:
-          configuration: "release-notes-config.json"
+          configuration: "../release-notes-config.json"
           toTag: "v${{ steps.package-version.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
@@ -55,7 +55,7 @@ jobs:
         with:
           tag: v${{ steps.package-version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          # body: ${{steps.build_release_notes.outputs.changelog}}
+          body: ${{steps.build_release_notes.outputs.changelog}}
           
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
