@@ -30,8 +30,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Release Drafter
         uses: release-drafter/release-drafter@v5.15.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
