@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: "14"
       - run: yarn install
-      # - run: yarn build
-      - run: yarn version --patch
+      - run: yarn build
+      - run: yarn version --patch --no-git-tag-version
       - run: git config core.hooksPath /dev/null
       - uses: EndBug/add-and-commit@v7
         with:
@@ -26,18 +26,6 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: test print
-        run: echo "GIT_TAG=`echo $(git describe --tags --abbrev=0)`" >> $GITHUB_ENV
-      - name: tag test
-        run: echo ${{env.GIT_TAG}}
-      - name: ref test
-        run: echo "$GITHUB_REF"
-      - name: Release Drafter
-        uses: release-drafter/release-drafter@v5.15.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
       #   with:
