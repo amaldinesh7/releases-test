@@ -44,6 +44,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
+      - name: Print changelog
+        env:
+          GITHUB_CONTEXTS: ${{steps.build_release_notes.outputs.changelog}}
+        run: echo "$GITHUB_CONTEXTS"
+
       - if: contains(github.event.pull_request.labels.*.name, 'Release')  
         name: Create release
         uses: ncipollo/release-action@v1
