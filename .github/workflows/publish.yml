@@ -1,12 +1,14 @@
 name: "Publish"
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types: [closed]
 jobs:
   release:
     name: "Release"
     runs-on: macos-latest
+    if: github.event.pull_request.merged == true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -15,7 +17,8 @@ jobs:
         with:
           node-version: "14"
       - run: yarn install
-      - run: yarn version --patch --no-git-tag-version
+      - run: yarn config set version-tag-prefix "v"
+      - run: yarn version --patch
       - run: git config core.hooksPath /dev/null
       - uses: EndBug/add-and-commit@v7
         with:
@@ -25,6 +28,19 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read package.json
+        uses: dutscher/read-package-json-endpoint-actions@v1.33.7
+        id: package-json-endpoint
+      - name: Show version number
+        run: echo "${{ steps.package-json-endpoint.outputs.endpoint }}"
+      - if: contains(github.event.pull_request.labels.*.name, 'Release')    
+        name: Create release notes
+        uses: release-drafter/release-drafter@v5.15.0
+        with:
+          tag: ${{ steps.package-json-endpoint.outputs.endpoint }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
       #   with:

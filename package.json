@@ -1,6 +1,6 @@
 {
   "name": "releases-test",
-  "version": "0.1.6",
+  "version": "2.1.19",
   "private": true,
   "dependencies": {
     "axios": "^0.24.0",
