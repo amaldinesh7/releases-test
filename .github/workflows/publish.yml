@@ -10,6 +10,14 @@ jobs:
     runs-on: macos-latest
     if: github.event.pull_request.merged == true
     steps:
+      - if: contains(github.event.pull_request.labels.*.name, 'Release')  
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0 # Required due to the weg Git works, without it this action won't be able to find any or the correct tags
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      
       - name: Checkout
         uses: actions/checkout@v2
       - name: node
@@ -24,22 +32,33 @@ jobs:
         with:
           branch: main
           message: 'New version release'
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Read package.json
         uses: tyankatsu0105/read-package-version-actions@v1
         id: package-version
-      - name: Show version number
-        run: echo "${{ steps.package-version.outputs.version }}"
-      - if: contains(github.event.pull_request.labels.*.name, 'Release')    
-        name: Create release notes
-        uses: release-drafter/release-drafter@v5.15.0
+
+      - if: contains(github.event.pull_request.labels.*.name, 'Release')  
+        name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v1
         with:
-          tag: ${{ steps.package-version.outputs.version }}
+          fromTag: ${{ steps.previoustag.outputs.tag }}
+          toTag: "v${{ steps.package-version.outputs.version }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+
+      - if: contains(github.event.pull_request.labels.*.name, 'Release')  
+        name: Create release notes
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ steps.package-version.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{steps.github_release.outputs.changelog}}
           
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
