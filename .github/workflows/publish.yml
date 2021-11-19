@@ -33,11 +33,11 @@ jobs:
       - run: yarn config set version-tag-prefix "v"
       
       - name: Bump version and create tag
-        if: ${{ env.IS_RELEASE == 'true' }}
+        if: env.IS_RELEASE == 'true'
         run: yarn version --patch
 
       - name: Bump version
-        if: ${{env.IS_RELEASE == 'false'}}
+        if: env.IS_RELEASE != 'true'
         run: yarn version --patch --no-git-tag-version
         
       - run: git config core.hooksPath /dev/null
@@ -57,7 +57,7 @@ jobs:
        
       - name: Build release notes
         uses: heinrichreimer/action-github-changelog-generator@v2.3
-        if: ${{env.IS_RELEASE == 'true'}}
+        if: env.IS_RELEASE == 'true'
         id: build_release_notes
         with:
           sinceTag: ${{ steps.previoustag.outputs.tag }}
@@ -71,7 +71,7 @@ jobs:
 
       - name: Create release
         uses: ncipollo/release-action@v1
-        if: ${{env.IS_RELEASE == 'true'}}
+        if: env.IS_RELEASE == 'true'
         with:
           tag: v${{ steps.package-version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
