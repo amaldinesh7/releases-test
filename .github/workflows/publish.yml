@@ -33,11 +33,11 @@ jobs:
       - run: yarn config set version-tag-prefix "v"
       - uses: fregante/setup-git-user@v1
       - name: Bump version and create tag
-        if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
+        if: contains(github.event.pull_request.labels.*.name, 'Release')
         run: yarn version --patch
 
       - name: Bump version
-        if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}} != true
+        if: "!contains(github.event.pull_request.labels.*.name, 'Release')"
         run: yarn version --patch --no-git-tag-version
         
       - run: git config core.hooksPath /dev/null
