@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Set variables
         env:
-          $IS_RELEASE: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
+          IS_RELEASE: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
         run: echo $IS_RELEASE
 
       - name: Checkout
