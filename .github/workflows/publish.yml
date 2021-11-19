@@ -10,15 +10,36 @@ jobs:
     runs-on: macos-latest
     if: github.event.pull_request.merged == true
     steps:
+      - name: Set variables
+        env:
+          $IS_RELEASE: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
+        run: echo $IS_RELEASE
+
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0 # Required due to the weg Git works, without it this action won't be able to find any or the correct tags
+
+      - name: 'Get Previous tag'
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+ 
       - name: node
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+
       - run: yarn install
       - run: yarn config set version-tag-prefix "v"
-      - run: yarn version --patch
+      
+      - name: Bump version and create tag
+        if: ${{$IS_RELEASE == 'true'}}
+        run: yarn version --patch
+
+      - name: Bump version
+        if: ${{$IS_RELEASE == 'false'}}
+        run: yarn version --patch --no-git-tag-version
+        
       - run: git config core.hooksPath /dev/null
       - uses: EndBug/add-and-commit@v7
         with:
@@ -33,14 +54,13 @@ jobs:
       - name: Read package.json
         uses: tyankatsu0105/read-package-version-actions@v1
         id: package-version
-
-      - if: contains(github.event.pull_request.labels.*.name, 'Release')  
-        name: Build release notes
+       
+      - name: Build release notes
+        uses: heinrichreimer/action-github-changelog-generator@v2.3
+        if: ${{$IS_RELEASE == 'true'}}
         id: build_release_notes
-        uses: mikepenz/release-changelog-builder-action@v1
         with:
-          configuration: "../release-notes-config.json"
-          toTag: "v${{ steps.package-version.outputs.version }}"
+          sinceTag: ${{ steps.previoustag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
@@ -49,9 +69,9 @@ jobs:
           GITHUB_CONTEXTS: ${{steps.build_release_notes.outputs.changelog}}
         run: echo "$GITHUB_CONTEXTS"
 
-      - if: contains(github.event.pull_request.labels.*.name, 'Release')  
-        name: Create release
+      - name: Create release
         uses: ncipollo/release-action@v1
+        if: ${{$IS_RELEASE == 'true'}}
         with:
           tag: v${{ steps.package-version.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
