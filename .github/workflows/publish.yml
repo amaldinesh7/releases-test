@@ -7,7 +7,7 @@ on:
 jobs:
   release:
     name: "Release"
-    runs-on: macos-latest
+    runs-on: ubuntu-20.04
     if: github.event.pull_request.merged == true
     steps:
       - name: Set variables
@@ -37,7 +37,7 @@ jobs:
         run: yarn version --patch
 
       - name: Bump version
-        if: "!${{contains(github.event.pull_request.labels.*.name, 'Release')}}"
+        if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}} != true
         run: yarn version --patch --no-git-tag-version
         
       - run: git config core.hooksPath /dev/null
