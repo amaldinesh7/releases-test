@@ -17,12 +17,10 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0 # Required due to the weg Git works, without it this action won't be able to find any or the correct tags
 
-      - name: 'Get Previous tag'
-        id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      # - name: 'Get Previous tag'
+      #   id: previoustag
+      #   uses: "WyriHaximus/github-action-get-previous-tag@v1"
  
       - name: node
         uses: actions/setup-node@v2
@@ -31,7 +29,7 @@ jobs:
 
       - run: yarn install
       - run: yarn config set version-tag-prefix "v"
-      - uses: fregante/setup-git-user@v1
+
       - name: Bump version and create tag
         if: contains(github.event.pull_request.labels.*.name, 'Release')
         run: yarn version --patch
@@ -54,29 +52,16 @@ jobs:
       - name: Read package.json
         uses: tyankatsu0105/read-package-version-actions@v1
         id: package-version
-       
-      - name: Build release notes
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
-        if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
-        id: build_release_notes
-        with:
-          sinceTag: ${{ steps.previoustag.outputs.tag }}
-          stripGeneratorNotice: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
-      - name: Print changelog
-        env:
-          GITHUB_CONTEXTS: ${{steps.build_release_notes.outputs.changelog}}
-        run: echo "$GITHUB_CONTEXTS"
-
-      - name: Create release
-        uses: ncipollo/release-action@v1
+      - name: Release Drafter
+        uses: release-drafter/release-drafter@v5.15.0
         if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
-        with:
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ steps.package-version.outputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: ${{steps.build_release_notes.outputs.changelog}}
+          publish: true
+
+       
           
       # - name: "Publish"
       #   uses: JS-DevTools/npm-publish@v1
