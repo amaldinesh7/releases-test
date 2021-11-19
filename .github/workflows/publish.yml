@@ -56,13 +56,13 @@ jobs:
         id: package-version
        
       - name: Build release notes
-        uses: heinrichreimer/action-github-changelog-generator@v2.3
+        uses: ScottBrenner/generate-changelog-action@v1.3.3
         if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
         id: build_release_notes
-        with:
-          sinceTag: ${{ steps.previoustag.outputs.tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        # with:
+        #   sinceTag: ${{ steps.previoustag.outputs.tag }}
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
 
       - name: Print changelog
         env:
