@@ -5,4 +5,3 @@ alert("hahahahaha");
 alert("hahahahaha");
 alert("hahahahaha");
 alert("hahahahaha");
-alert("hahahahaha");
