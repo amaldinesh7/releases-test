@@ -16,6 +16,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "14"
+      - name: Set version type
+        run: |
+          if contains(github.event.pull_request.labels.*.name, 'major'); then
+              echo "VERSION=major" >> "$GITHUB_ENV"
+          elif contains(github.event.pull_request.labels.*.name, 'minor'); then
+              echo "VERSION=minor" >> "$GITHUB_ENV"
+          else
+              echo "VERSION=patch" >> "$GITHUB_ENV"
+          fi
+      - run: |
+          echo "$VERSION"
+          echo "${{ env.VERSION }}"
+
       - run: yarn install
       - run: yarn config set version-tag-prefix "v"
       
