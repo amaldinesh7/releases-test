@@ -29,15 +29,19 @@ jobs:
           echo "$VERSION"
           echo "${{ env.VERSION }}"
 
-      - name: 'Automated Version Bump'
-        id: version-bump
-        uses: 'phips28/gh-action-bump-version@master'
-        if: "!contains(github.event.pull_request.labels.*.name, 'skip-version-bump')"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: 'Automated Version Bump'
+      #   id: version-bump
+      #   uses: 'phips28/gh-action-bump-version@master'
+      #   if: "!contains(github.event.pull_request.labels.*.name, 'skip-version-bump')"
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     default: ${{ env.VERSION }}
+      - name: Bump Versions
+        uses: michmich112/version-bumper@master
         with:
-          default: ${{ env.VERSION }}
-
+          bump: ${{ env.VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn install
       - run: yarn config set version-tag-prefix "v"
       
