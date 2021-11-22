@@ -18,9 +18,9 @@ jobs:
           node-version: "14"
       - name: Set version type
         run: |
-          if contains(github.event.pull_request.labels.*.name, 'major'); then
+          if ${{contains(github.event.pull_request.labels.*.name, 'major')}}; then
               echo "VERSION=major" >> "$GITHUB_ENV"
-          elif contains(github.event.pull_request.labels.*.name, 'minor'); then
+          elif ${{contains(github.event.pull_request.labels.*.name, 'minor')}}; then
               echo "VERSION=minor" >> "$GITHUB_ENV"
           else
               echo "VERSION=patch" >> "$GITHUB_ENV"
