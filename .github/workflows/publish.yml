@@ -16,16 +16,15 @@ jobs:
           labels: "major, minor, patch"
 
       - name: Comment PR
+        if: always()
         uses: thollander/actions-comment-pull-request@v1
         with:
           message: 'Example of message !'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Print output
-        env:
-          MESSAGE: ${{steps.enforce_pr_labels.outputs.message}}
         if: |
-          always() && ${{env.MESSAGE != ''}}
+          always() && steps.enforce_pr_labels.outputs.message != ''
         run: echo "${{steps.enforce_pr_labels.outputs.message}}"
 
     
