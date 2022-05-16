@@ -27,8 +27,8 @@ jobs:
         env:
           prBody: ${{ steps.PR.outputs.pr_body }}
         run: |
-          body=echo -e ${prBody} | sed "s/.*Description//;s/###.*//"
-          echo "::set-output name=CHANGELOG_BODY::$(echo $item)"
+          body=echo ${prBody} | sed "s/.*Description//;s/###.*//"
+          echo "::set-output name=CHANGELOG_BODY::$(echo $body)"
         shell: bash
           
       - run: echo ${{ steps.CHANGELOG.outputs.CHANGELOG_BODY }}
