@@ -25,9 +25,13 @@ jobs:
       - name: Extract changelog
         id: CHANGELOG
         run: |
-          body=$(echo -e '${{ steps.PR.outputs.pr_body }}' | sed "s/.*Description//;s/###.*//")
-          echo "${{ steps.PR.outputs.pr_body }}"
+          body=$(echo -e '${{ steps.PR.outputs.pr_body }}' | sed -n '/Description/{:a;N;/### Checklist/!ba;s/.*Description\|### Checklist.*//g;p}')
+          echo "------"
           echo $body
+          echo "------"
+          echo "------"
+          echo -e '${{ steps.PR.outputs.pr_body }}'
+          echo "------"
           echo "::set-output name=CHANGELOG_BODY::$(echo $body)"
         shell: bash
           
