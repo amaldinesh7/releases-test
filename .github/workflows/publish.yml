@@ -21,10 +21,17 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ github.event.pull_request.head.sha }}
-          
-      - run: echo "Your PR is ${prBody}"
+
+      - name: Extract changelog
+        id: CHANGELOG
         env:
           prBody: ${{ steps.PR.outputs.pr_body }}
+        run: |
+          body=echo -e ${prBody} | sed "s/.*Description//;s/###.*//"
+          echo "::set-output name=CHANGELOG_BODY::$(echo $item)"
+        shell: bash
+          
+      - run: echo ${{ steps.CHANGELOG.outputs.CHANGELOG_BODY }}
 
        
           
