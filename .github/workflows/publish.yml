@@ -25,7 +25,7 @@ jobs:
       - name: Extract changelog
         id: CHANGELOG
         run: |
-          body=echo "${{ steps.PR.outputs.pr_body }}" | sed "s/.*Description//;s/###.*//"
+          body=$(echo "${{ steps.PR.outputs.pr_body }}" | sed "s/.*Description//;s/###.*//")
           echo "::set-output name=CHANGELOG_BODY::$(echo $body)"
         shell: bash
           
