@@ -26,6 +26,8 @@ jobs:
         id: CHANGELOG
         run: |
           body=$(echo -e '${{ steps.PR.outputs.pr_body }}' | sed "s/.*Description//;s/###.*//")
+          echo "${{ steps.PR.outputs.pr_body }}"
+          echo $body
           echo "::set-output name=CHANGELOG_BODY::$(echo $body)"
         shell: bash
           
