@@ -15,67 +15,16 @@ jobs:
       - name: node
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - name: Set version type
-        run: |
-          if ${{contains(github.event.pull_request.labels.*.name, 'major')}}; then
-              echo "VERSION=major" >> "$GITHUB_ENV"
-          elif ${{contains(github.event.pull_request.labels.*.name, 'minor')}}; then
-              echo "VERSION=minor" >> "$GITHUB_ENV"
-          else
-              echo "VERSION=patch" >> "$GITHUB_ENV"
-          fi
-      - run: |
-          echo "$VERSION"
-          echo "${{ env.VERSION }}"
-
-      # - name: 'Automated Version Bump'
-      #   id: version-bump
-      #   uses: 'phips28/gh-action-bump-version@master'
-      #   if: "!contains(github.event.pull_request.labels.*.name, 'skip-version-bump')"
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     default: ${{ env.VERSION }}
-      - name: Bump Versions
-        uses: michmich112/version-bumper@master
+          node-version: "14"  
+      - uses: 8BitJonny/gh-get-current-pr@2.0.0
+        id: PR
         with:
-          bump: ${{ env.VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: yarn install
-      - run: yarn config set version-tag-prefix "v"
-      
-      - name: Bump version and create tag
-        if: contains(github.event.pull_request.labels.*.name, 'Release')
-        run: yarn version --patch
-
-      - name: Bump version
-        if: "!contains(github.event.pull_request.labels.*.name, 'Release')"
-        run: yarn version --patch --no-git-tag-version
-        
-      - run: git config core.hooksPath /dev/null
-      - uses: EndBug/add-and-commit@v7
-        with:
-          branch: main
-          message: 'New version release'
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Read package.json
-        uses: tyankatsu0105/read-package-version-actions@v1
-        id: package-version
-
-      - name: Release Drafter
-        uses: release-drafter/release-drafter@v5.15.0
-        if: ${{contains(github.event.pull_request.labels.*.name, 'Release')}}
+          sha: ${{ github.event.pull_request.head.sha }}
+          
+      - run: echo "Your PR is ${prBody}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: v${{ steps.package-version.outputs.version }}
-          publish: true
+          prBody: ${{ steps.PR.outputs.pr_body }}
 
        
           
