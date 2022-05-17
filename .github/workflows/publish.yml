@@ -34,6 +34,9 @@ jobs:
            echo -e $results
            echo "::set-output name=pythonResult::$results"
 
+           try_again=$(echo "${{ steps.PR.outputs.pr_body }}" | python3 -c 'import json; import sys; print(json.dumps(sys.stdin.read().partition("### Description")[2].partition("### Checklist")[0].strip()))')
+           echo "RESULTS=${try_again}" >> $GITHUB_ENV
+
   # python3 -c 'import sys; print(sys.stdin.read().partition('Description')[2].partition('### Checklist')[0].strip().replace('\n', '%0A')) 
       # - name: Extract changelog
       #   id: CHANGELOG
@@ -46,3 +49,4 @@ jobs:
       - run: echo "-------"
 
       - run: echo "${{ steps.PYTHON.outputs.pythonResult }}"
+      - run: echo ${{ env.RESULTS }}
