@@ -20,17 +20,26 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.2
+
+      - name: Run Python
+        id: PYTHON
+        run: |
+           results=$(echo "${{ steps.PR.outputs.pr_body }}" | python3 -c 'import sys; print(sys.stdin.read().partition('Description')[2].partition('### Checklist')[0].strip().replace('\n', '%0A')) )
+           echo $results
+           echo "::set-output name=pythonResult::$results"
 
 
-      - name: Extract changelog
-        id: CHANGELOG
-        uses: amaldinesh7/extract-substring@master
-        with:
-          content: ${{ steps.PR.outputs.pr_body }}
-          delimiterOne: "Description"
-          delimiterTwo: "### Checklist"
+      # - name: Extract changelog
+      #   id: CHANGELOG
+      #   uses: amaldinesh7/extract-substring@master
+      #   with:
+      #     content: ${{ steps.PR.outputs.pr_body }}
+      #     delimiterOne: "Description"
+      #     delimiterTwo: "### Checklist"
           
-      - run: echo "${{ steps.CHANGELOG.outputs.match }}"
       - run: echo "-------"
 
-      - run: echo "${{ steps.CHANGELOG.outputs.changelog_content }}"
+      - run: echo "${{ steps.PYTHON.outputs.pythonResult }}"
