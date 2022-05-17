@@ -31,11 +31,3 @@ jobs:
           delimiterTwo: "### Checklist"
           
       - run: echo ${{ steps.CHANGELOG.outputs.match }}
-
-       
-          
-      # - name: "Publish"
-      #   uses: JS-DevTools/npm-publish@v1
-      #   with:
-      #     access: "public"
-      #     token: ${{ secrets.NPM_TOKEN }}
