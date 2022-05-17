@@ -30,4 +30,4 @@ jobs:
           delimiterOne: "Description"
           delimiterTwo: "### Checklist"
           
-      - run: echo ${{ steps.CHANGELOG.outputs.match }}
+      - run: echo "${{ steps.CHANGELOG.outputs.match }}"
