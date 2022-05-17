@@ -31,3 +31,6 @@ jobs:
           delimiterTwo: "### Checklist"
           
       - run: echo "${{ steps.CHANGELOG.outputs.match }}"
+      - run: echo "-------"
+
+      - run: echo "${{ steps.CHANGELOG.outputs.changelog_content }}"
