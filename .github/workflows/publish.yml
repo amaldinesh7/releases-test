@@ -30,7 +30,7 @@ jobs:
            results=$(echo "${{ steps.PR.outputs.pr_body }}" | python3 -c 'import sys; print(sys.stdin.read().partition("### Description")[2].partition("### Checklist")[0].strip())')
           
            echo "$results"
-           echo "-----"
+           echo "------"
            echo -e $results
            echo "::set-output name=pythonResult::$results"
 
