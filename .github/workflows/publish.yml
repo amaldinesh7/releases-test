@@ -27,7 +27,7 @@ jobs:
       - name: Run Python
         id: PYTHON
         run: |
-           results=$(echo "${{ steps.PR.outputs.pr_body }}" | python3 -c 'import sys; print(sys.stdin.read().partition("### Description")[2].partition("### Checklist")[0].strip())')
+           results=$(echo "${{ steps.PR.outputs.pr_body }}" | python3 -c 'import sys; print(sys.stdin.read().partition("### Description")[2].partition("### Checklist")[0].strip().replace('\n', '%0A'))')
           
            echo "$results"
            echo "------"
