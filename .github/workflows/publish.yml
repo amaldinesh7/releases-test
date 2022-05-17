@@ -21,8 +21,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ github.event.pull_request.head.sha }}
       
-      - name: Setup Python
-        uses: actions/setup-python@v3.1.2
+   
 
       - name: Run Python
         id: PYTHON
