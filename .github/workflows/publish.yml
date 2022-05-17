@@ -3,12 +3,10 @@ on:
   pull_request:
     branches:
       - main
-    types: [closed]
 jobs:
   release:
     name: "Release"
     runs-on: macos-latest
-    if: ${{ github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name,'storybook') }} 
     steps:
       - name: Checkout
         uses: actions/checkout@v2.2.0 
@@ -22,20 +20,16 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sha: ${{ github.event.pull_request.head.sha }}
 
+
       - name: Extract changelog
         id: CHANGELOG
-        run: |
-          body=$(echo -e '${{ steps.PR.outputs.pr_body }}' | sed -n '/Description/{:a;N;/### Checklist/!ba;s/.*Description\|### Checklist.*//g;p}')
-          echo "------"
-          echo $body
-          echo "------"
-          echo "------"
-          echo -e '${{ steps.PR.outputs.pr_body }}'
-          echo "------"
-          echo "::set-output name=CHANGELOG_BODY::$(echo $body)"
-        shell: bash
+        uses: amaldinesh7/extract-substring@master
+        with:
+          content: ${{ steps.PR.outputs.pr_body }}
+          delimiterOne: "Description"
+          delimiterTwo: "### Checklist"
           
-      - run: echo ${{ steps.CHANGELOG.outputs.CHANGELOG_BODY }}
+      - run: echo ${{ steps.CHANGELOG.outputs.match }}
 
        
           
